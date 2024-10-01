@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once __DIR__. '/../database/dbconnection.php';
+include_once __DIR__.'/../database/dbconnection.php';
 
 //error reporting
 ini_set('display_errors', 1);
@@ -54,5 +54,3 @@ class SystemConfig{
         }
 }
 ?>
-
-
