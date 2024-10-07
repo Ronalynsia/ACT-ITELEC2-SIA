@@ -114,6 +114,7 @@ class ADMIN
         }
 
     }
+
     public function verifyOTP($username, $email, $password, $tokencode, $otp, $csrf_token){
         if($otp == $_SESSION['OTP']){
             unset($_SESSION['OTP']);
@@ -205,84 +206,92 @@ class ADMIN
 
         }
     
-    
     public function addAdmin($csrf_token, $username, $email, $password) 
     { 
         $stmt = $this->runQuery("SELECT * FROM user WHERE email = :email"); 
         $stmt->execute(array(":email" => $email)); 
-       
- 
+            
         if ($stmt->rowCount() > 0){ 
-            echo "<script>alert('Email already exist.'); window.location.href = '../../../';</script>"; 
+            echo "<script>alert('Email already exists.'); window.location.href = '../../../';</script>"; 
             exit; 
         } 
-        if(!isset($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)){ 
+        if (!isset($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) { 
             echo "<script>alert('Invalid CSRF token.'); window.location.href = '../../../';</script>"; 
             exit; 
         } 
-        unset($_SESSION ['csrf_token']); 
- 
- 
-        $hash_password = md5($password);
-        $stmt = $this->runQuery('INSERT INTO user (username, email, password) VALUES (:username, :email, :password)'); 
-        $exec = $stmt->execute(array( 
-            ":username" => $username, 
-            ":email" => $email, 
-            ":password" => $hash_password 
-        )); 
- 
-        if ($exec){ 
-            echo "<script>alert('Admin Added Successfully.'); window.location.href = '../../../';</script>"; 
-            exit; 
-        }else{ 
-            echo "<script>alert('Error Adding Admin.'); window.location.href = '../../../';</script>"; 
-            exit; 
-        } 
-    } 
- 
-    public function adminSignin($email, $password, $csrf_token) { 
-        try { 
-            if (!isset($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) { 
-                echo "<script>alert('Invalid CSRF token.'); window.location.href = '../../../';</script>"; 
+             unset($_SESSION['csrf_token']); 
+             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+            $stmt = $this->runQuery('INSERT INTO user (username, email, password) VALUES (:username, :email, :password)'); 
+            $exec = $stmt->execute(array( 
+                ":username" => $username, 
+                ":email" => $email, 
+                ":password" => $hashedPassword 
+            )); 
+        
+            if ($exec){ 
+                echo "<script>alert('Admin Added Successfully.'); window.location.href = '../../../';</script>"; 
+                exit; 
+            } else { 
+                echo "<script>alert('Error Adding Admin.'); window.location.href = '../../../';</script>"; 
                 exit; 
             } 
-            unset($_SESSION['csrf_token']); 
-            $stmt = $this->conn->prepare("SELECT * FROM user WHERE email = :email AND status = :status"); 
-            $stmt->execute(array(":email" => $email, ":status" => "active")); 
-            $userRow = $stmt->fetch(PDO::FETCH_ASSOC); 
-           
-            if ($userRow) {
-               
-                if (password_verify($password, $userRow['password'])) { 
-                    $activity = "Has Successfully Signed in"; 
-                    $user_id = $userRow['id']; 
-                    $this->logs($activity, $user_id); 
-    
-                    $_SESSION['adminSession'] = $user_id; 
-                    echo "<script>alert('Welcome'); window.location.href = '../';</script>"; 
-                    exit; 
-                } else {
-                    echo "<script>alert('Password is incorrect'); window.location.href = '../../../';</script>"; 
-                    exit; 
+        }
+        public function adminSignin($email, $password, $csrf_token) {
+        try {
+             if (!isset($csrf_token) || !hash_equals($_SESSION['csrf_token'], $csrf_token)) {
+                    echo "<script>alert('Invalid CSRF token.'); window.location.href = '../../../';</script>";
+                    exit;
                 }
-            } else {
-                echo "<script>alert('No Account found or email not verified'); window.location.href = '../../../';</script>"; 
-                exit; 
+        
+                unset($_SESSION['csrf_token']);
+                $stmt = $this->conn->prepare("SELECT * FROM user WHERE email = :email AND status = :status");
+                $stmt->execute(array(":email" => $email, ":status" => "active"));
+                $userRow = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+                if ($userRow) {
+                    
+                    if (password_verify($password, $userRow['password'])) {
+                        $activity = "Has Successfully Signed in";
+                        $user_id = $userRow['id'];
+                        $this->logs($activity, $user_id);
+        
+                        
+                        $_SESSION['adminSession'] = $user_id;
+        
+                        echo "<script>alert('Welcome'); window.location.href = '../';</script>";
+                        exit;
+                    } elseif ($password === $userRow['password']) {
+                        
+                        $activity = "Has Successfully Signed in with Plain Password";
+                        $user_id = $userRow['id'];
+                        $this->logs($activity, $user_id);
+        
+                        
+                        $_SESSION['adminSession'] = $user_id;
+        
+                        echo "<script>alert('Welcome'); window.location.href = '../';</script>";
+                        exit;
+                    } else {
+                        echo "<script>alert('Password is incorrect'); window.location.href = '../../../';</script>";
+                        exit;
+                    }
+                } else {
+                    echo "<script>alert('No account found or email not verified'); window.location.href = '../../../';</script>";
+                    exit;
+                }
+            } catch (Exception $e) {
+                error_log("Error in adminSignin: " . $e->getMessage());
+                echo "<script>alert('An error occurred. Please try again.'); window.location.href = '../../../';</script>";
+                exit;
             }
-
-        } catch (Exception $e) {
-            error_log("Error in adminSignin: " . $e->getMessage());
-            echo "<script>alert('An error occurred. Please try again.'); window.location.href = '../../../';</script>"; 
-            exit; 
-}
-    } 
-    
+        }
+   
     public function adminSignout() 
     { 
       unset($_SESSION['adminSession']);
       echo "<script>alert('Sign Out Successfully'); window.location.href = '../../../';</script>"; 
       exit; 
-
     } 
 
     function send_email($email, $message, $subject, $smtp_email, $smtp_password){
@@ -301,17 +310,18 @@ class ADMIN
         $mail->msgHTML($message);
         $mail->Send();
     }
+    
     public function logs($activity, $user_id)
     {
         $stmt = $this->conn->prepare("INSERT INTO logs (user_id, activity) VALUES (:user_id, :activity)");
         $stmt->execute(array(":user_id" => $user_id, ":activity" => $activity));
     }
+
     public function isUserLoggedIn()
     {
         if(isset($_SESSION['adminSession'])){
             return true;
         }
-        
     }
   
     public function redirect ($url)
@@ -323,22 +333,19 @@ class ADMIN
     { 
         $stmt = $this->conn->prepare ($sql); 
         return $stmt; 
- 
     } 
-
 }
+
 if(isset($_POST['btn-signup'])){ 
     $_SESSION['not_verify_username'] = trim($_POST['username']);
     $_SESSION['not_verify_email'] = trim($_POST['email']);
     $_SESSION['not_verify_password'] = trim($_POST['password']);
-
 
     $email = trim($_POST['email']);
     $otp = rand(100000, 999999);
 
     $addAdmin = new ADMIN(); 
     $addAdmin->sendOtp($otp, $email);
- 
 } 
  
 if(isset($_POST['btn-verify'])){ 
@@ -352,21 +359,18 @@ if(isset($_POST['btn-verify'])){
 
     $adminVerify = new ADMIN();
     $adminVerify->verifyOTP($username, $email, $password, $tokencode, $otp, $csrf_token);
-
 }
 
 if(isset($_POST['btn-signin'])){ 
     $csrf_token = trim($_POST['csrf_token']); 
     $email = trim($_POST['email']); 
     $password = trim($_POST['password']); 
- 
+
     $adminSignin = new ADMIN(); 
-    $adminSignin->adminSignin($email, $password,$csrf_token); 
- 
+    $adminSignin->adminSignin($email, $password, $csrf_token); 
 } 
 
 if(isset($_GET['admin_signout'])){
-
     $adminSignout = new ADMIN();
     $adminSignout->adminSignout();
 }

@@ -3,35 +3,45 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    background-image: url('img/bg-stars.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #0d0d0d;
+    color: #3c8832;
 }
+
 h1 {
     font-size: 2em;
     margin-bottom: 20px;
-    color: #333;
+    color: #e0e0e0;
 }
+
 button {
-    background-color: #007BFF;
+    background-color: #184446;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     font-size: 1em;
-    color: #fff;
+    color: #e7f8e5;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
 button a {
     text-decoration: none;
     color: #fff;
 }
+
 button:hover {
-    background-color: #0056b3;
+    background-color: #539489;
 }

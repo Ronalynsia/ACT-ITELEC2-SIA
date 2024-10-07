@@ -1,65 +1,121 @@
-
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
-    padding: 0;
+    height: 100vh;
+    background-image: url('../img/bg-stars.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #0d0d0d;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    padding: 0 20px;
+    overflow: hidden;
 }
 
 .container {
     display: flex;
-    justify-content: space-around;
-    width: 80%;
-    max-width: 1200px;
+    flex-direction: column;
+    width: 90%;
+    max-width: 700px;
+    justify-content: center;
+    position: relative;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.form-wrapper {
+    display: flex;
+    width: 100%;
 }
 
 .form-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    box-sizing: border-box;
+    background-color: rgba(102, 126, 109, 0.459);
+    padding: 50px;
+    border-radius: 30px;
+    box-shadow: 0px 6px 15px hwb(189 14% 59% / 0.589);
+    margin: 20px;
+    flex: 1;
+    transform: translateY(-20px);
+    opacity: 0;
+    animation: slideIn 1s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 h1 {
+    font-size: 2rem;
     text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    animation: fadeIn 0.5s ease;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-    width: 100%;
+input {
+    width: 90%;
     padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border: 1px solid #444;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: #181b1a85;
+    color: #f7e7e7;
+    transition: border-color 0.3s, background-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus {
+    border-color: #438f94;
+    background-color: #2a2a2a;
+    outline: none;
+    box-shadow: 0 0 5px #438f94;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #0e2923;
+    color: white;
+    padding: 5px;
     border: none;
-    color: #fff;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    width: 100%;
+    font-size: 18px;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #539489;
+    transform: translateY(-3px);
+}
+
+.footer-links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.footer-links a {
+    color: #a0d3a0;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+    color: #b0e0b0;
 }

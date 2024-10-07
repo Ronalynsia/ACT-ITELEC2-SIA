@@ -21,10 +21,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=, initial-scale=1.0">
     <title>ADMIN DASHBOARD</title>
-    <link rel="stylesheet" href="page_css/style.css">
+    <link rel="stylesheet" href="page_css/page.css">
 </head>
 <body>
-    <h1>WELCOME <?php  echo $user_data['email']?></h1>
+    <h1>WELCOME,<?php  echo $user_data['email']?></h1>
     <button><a href="authentication/admin-class.php?admin_signout">SIGN OUT</a></button>
 </body>
 </html>
